@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAX - Official Portal</title>
+    <!-- Google Fonts: Grand Hotel & Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Grand+Hotel&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* Light Neumorphism Theme Variables */
+            --bg-color: #f0f2f5;
+            --text-main: #31344b;
+            --text-muted: #7b809a;
+            --accent-color: #4f46e5;
+            --shadow-light: #ffffff;
+            --shadow-dark: #d1d9e6;
+            
+            --outer-shadow: 9px 9px 18px var(--shadow-dark), -9px -9px 18px var(--shadow-light);
+            --outer-shadow-sm: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+            --inset-shadow: inset 5px 5px 10px var(--shadow-dark), inset -5px -5px 10px var(--shadow-light);
+            --inset-shadow-deep: inset 8px 8px 14px var(--shadow-dark), inset -8px -8px 14px var(--shadow-light);
+            
+            --error-color: #ef4444;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="dark"] {
+            /* Dark Neumorphism Theme Variables */
+            --bg-color: #1e2026;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --accent-color: #818cf8;
+            --shadow-light: #282b33;
+            --shadow-dark: #141519;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 15px;
+            transition: background-color 0.4s ease, color 0.4s ease;
+            overflow-x: hidden;
+        }
+
+        /* Mobile Frame Container */
+        .app-card {
+            width: 100%;
+            max-width: 400px;
+            background-color: var(--bg-color);
+            border-radius: 35px;
+            box-shadow: var(--outer-shadow);
+            padding: 30px 26px 26px;
+            position: relative;
+            transition: background-color 0.4s ease, box-shadow 0.4s ease;
+            overflow: hidden;
+        }
+
+        /* Top Bar & Dark/Light Mode Toggle */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .admin-quick-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--bg-color);
+            box-shadow: var(--outer-shadow-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.8rem;
+            transition: var(--transition-smooth);
+        }
+
+        .admin-quick-btn:hover {
+            color: var(--accent-color);
+            transform: rotate(35deg);
+        }
+
+        .theme-switch {
+            width: 58px;
+            height: 30px;
+            border-radius: 50px;
+            background: var(--bg-color);
+            box-shadow: var(--inset-shadow);
+            position: relative;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 8px;
+            transition: var(--transition-smooth);
+        }
+
+        .theme-switch i {
+            font-size: 12px;
+            color: var(--text-muted);
+            z-index: 1;
+        }
+
+        .switch-knob {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--bg-color);
+            box-shadow: var(--outer-shadow-sm);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 2;
+        }
+
+        [data-theme="dark"] .switch-knob {
+            transform: translateX(28px);
+        }
+
+        /* Announcement Banner */
+        .notice-banner {
+            display: none;
+            background: var(--bg-color);
+            box-shadow: var(--inset-shadow);
+            border-radius: 16px;
+            padding: 10px 14px;
+            margin-bottom: 20px;
+            font-size: 0.76rem;
+            color: var(--accent-color);
+            font-weight: 500;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .notice-banner.show {
+            display: flex;
+        }
+
+        /* Brand Header */
+        .brand-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .brand-logo {
+            font-family: 'Grand Hotel', cursive;
+            font-size: 3.8rem;
+            font-weight: 400;
+            color: var(--text-main);
+            letter-spacing: 2px;
+            text-shadow: 3px 3px 6px var(--shadow-dark), -2px -2px 4px var(--shadow-light);
+            line-height: 1.1;
+            user-select: none;
+            cursor: pointer;
+        }
+
+        .brand-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 6px;
+            font-weight: 400;
+        }
+
+        /* Views Transition */
+        .view-panel {
+            transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 100%;
+        }
+
+        .view-panel.hidden {
+            display: none;
+            opacity: 0;
+            transform: translateY(15px) scale(0.97);
+        }
+
+        .view-panel.active {
+            display: block;
+            animation: fadeInView 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes fadeInView {
+            from {
+                opacity: 0;
+                transform: translateY(14px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Neumorphic Input Group */
+        .input-group {
+            position: relative;
+            margin-bottom: 22px;
+        }
+
+        .neu-input {
+            width: 100%;
+            padding: 16px 46px 16px 46px;
+            border-radius: 50px;
+            border: 1.5px solid transparent;
+            outline: none;
+            background: var(--bg-color);
+            box-shadow: var(--inset-shadow);
+            color: var(--text-main);
+            font-size: 0.9rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            transition: var(--transition-smooth);
+        }
+
+        .neu-input:focus {
+            box-shadow: var(--inset-shadow-deep);
+            border-color: rgba(79, 70, 229, 0.35);
+        }
+
+        .input-icon-left {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            pointer-events: none;
+            transition: color 0.25s ease;
+        }
+
+        .neu-input:focus ~ .input-icon-left {
+            color: var(--accent-color);
+        }
+
+        /* Floating Label */
+        .floating-label {
+            position: absolute;
+            left: 46px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.84rem;
+            color: var(--text-muted);
+            pointer-events: none;
+            transition: var(--transition-smooth);
+            background: transparent;
+            padding: 0 5px;
+        }
+
+        .neu-input:focus ~ .floating-label,
+        .neu-input:not(:placeholder-shown) ~ .floating-label {
+            top: 0;
+            left: 22px;
+            font-size: 0.68rem;
+            font-weight: 600;
+            color: var(--accent-color);
+            background: var(--bg-color);
+            border-radius: 8px;
+            box-shadow: 2px 2px 4px var(--shadow-dark), -2px -2px 4px var(--shadow-light);
+            padding: 1px 8px;
+        }
+
+        .valid-check {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%) scale(0);
+            color: var(--success-color);
+            font-size: 0.95rem;
+            pointer-events: none;
+            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .input-group.valid .valid-check {
+            transform: translateY(-50%) scale(1);
+        }
+
+        .input-group.error .neu-input {
+            border-color: var(--error-color);
+            animation: shakeError 0.4s ease;
+        }
+
+        .error-msg {
+            font-size: 0.74rem;
+            color: var(--error-color);
+            text-align: center;
+            margin-top: -12px;
+            margin-bottom: 14px;
+            display: none;
+            font-weight: 500;
+        }
+
+        .error-msg.show {
+            display: block;
+        }
+
+        @keyframes shakeError {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+
+        /* Neumorphic Raised Buttons & Ripple */
+        .neu-btn {
+            width: 100%;
+            padding: 15px 22px;
+            border-radius: 50px;
+            border: none;
+            outline: none;
+            background: var(--bg-color);
+            box-shadow: var(--outer-shadow-sm);
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 0.92rem;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-decoration: none;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .neu-btn.primary-btn {
+            color: var(--accent-color);
+        }
+
+        .neu-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .neu-btn:active, .neu-btn.pressed {
+            box-shadow: var(--inset-shadow);
+            transform: translateY(1px) scale(0.99);
+        }
+
+        /* Ripple Animation */
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(79, 70, 229, 0.16);
+            transform: scale(0);
+            animation: rippleEffect 0.55s ease-out;
+            pointer-events: none;
+        }
+
+        @keyframes rippleEffect {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* Post-Login Portal Page Styling */
+        .portal-card {
+            background: var(--bg-color);
+            box-shadow: var(--inset-shadow);
+            border-radius: 26px;
+            padding: 24px 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .portal-badge {
+            width: 62px;
+            height: 62px;
+            border-radius: 50%;
+            background: var(--bg-color);
+            box-shadow: var(--outer-shadow-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 14px;
+            color: var(--success-color);
+            font-size: 1.5rem;
+        }
+
+        .portal-title {
+            font-size: 1.08rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-main);
+        }
+
+        .portal-desc {
+            font-size: 0.79rem;
+            color: var(--text-muted);
+            line-height: 1.55;
+            margin-bottom: 16px;
+        }
+
+        /* Website Preview Box inside Portal */
+        .website-preview-box {
+            background: var(--bg-color);
+            box-shadow: var(--outer-shadow-sm);
+            border-radius: 18px;
+            padding: 14px 16px;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .website-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-align: left;
+            overflow: hidden;
+        }
+
+        .website-info i {
+            color: var(--accent-color);
+            font-size: 1.15rem;
+        }
+
+        .website-domain {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-main);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .website-status {
+            font-size: 0.68rem;
+            color: var(--success-color);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: 500;
+        }
+
+        /* Strictly Two Options Section: About Us & Support */
+        .two-options-section {
+            margin-top: 26px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(150, 150, 150, 0.14);
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .option-pill {
+            padding: 12px 14px;
+            border-radius: 50px;
+            background: var(--bg-color);
+            box-shadow: var(--outer-shadow-sm);
+            border: none;
+            color: var(--text-main);
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .option-pill i {
+            color: var(--accent-color);
+            font-size: 0.9rem;
+        }
+
+        .option-pill:hover {
+            transform: translateY(-1px);
+        }
+
+        .option-pill:active {
+            box-shadow: var(--inset-shadow);
+            transform: scale(0.97);
+        }
+
+        /* Spinner */
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--text-muted);
+            border-top-color: var(--accent-color);
+            border-radius: 50%;
+            animation: spin 0.65s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Footer Telegram Link */
+        .card-footer {
+            margin-top: 22px;
+            text-align: center;
+        }
+
+        .telegram-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.78rem;
+            font-weight: 500;
+            position: relative;
+            padding: 4px 8px;
+            transition: color 0.25s ease;
+        }
+
+        .telegram-link i {
+            color: #229ED9;
+            font-size: 0.95rem;
+        }
+
+        .telegram-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--accent-color);
+            border-radius: 2px;
+            transition: width 0.28s ease, left 0.28s ease;
+        }
+
+        .telegram-link:hover {
+            color: var(--text-main);
+        }
+
+        .telegram-link:hover::after {
+            width: 100%;
+            left: 0;
+        }
+
+        /* About Us Premium Modal */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 17, 23, 0.55);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 999;
+        }
+
+        .modal-backdrop.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .neu-modal {
+            width: 100%;
+            max-width: 360px;
+            background: var(--bg-color);
+            border-radius: 30px;
+            box-shadow: var(--outer-shadow);
+            padding: 26px 24px;
+            text-align: center;
+            transform: translateY(20px) scale(0.95);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .modal-backdrop.active .neu-modal {
+            transform: translateY(0) scale(1);
+        }
+
+        .modal-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--bg-color);
+            box-shadow: var(--inset-shadow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 14px;
+            color: var(--accent-color);
+            font-size: 1.35rem;
+        }
+
+        .modal-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text-main);
+        }
+
+        .modal-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.65;
+            margin-bottom: 20px;
+            text-align: center;
+            white-space: pre-line;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-card">
+        <!-- Top Bar with Admin Link & Neumorphic Dark/Light Switch -->
+        <div class="top-bar">
+            <a href="admin.html" class="admin-quick-btn" title="Admin Panel">
+                <i class="fa-solid fa-gear"></i>
+            </a>
+            <div class="theme-switch" id="themeSwitch" title="Toggle Dark/Light Soft UI">
+                <i class="fa-solid fa-sun"></i>
+                <i class="fa-solid fa-moon"></i>
+                <div class="switch-knob"></div>
+            </div>
+        </div>
+
+        <!-- Optional Admin Notice Banner -->
+        <div class="notice-banner" id="noticeBanner">
+            <i class="fa-solid fa-bullhorn"></i>
+            <span id="noticeText"></span>
+        </div>
+
+        <!-- Brand Header -->
+        <div class="brand-header">
+            <h1 class="brand-logo" id="brandLogoText" title="Double tap for Admin Panel">MAX</h1>
+            <p class="brand-subtitle" id="headerSubtitle">Enter your phone number to continue</p>
+        </div>
+
+        <!-- VIEW 1: PHONE NUMBER LOGIN ONLY -->
+        <div id="loginView" class="view-panel active">
+            <form id="phoneLoginForm" novalidate>
+                <div class="input-group" id="phoneGroup">
+                    <input type="tel" id="phoneInput" class="neu-input" placeholder=" " required autocomplete="tel">
+                    <i class="fa-solid fa-phone input-icon-left"></i>
+                    <label class="floating-label" for="phoneInput">Phone number</label>
+                    <i class="fa-solid fa-circle-check valid-check"></i>
+                </div>
+                <div class="error-msg" id="loginErrorMsg">Invalid or blocked phone number.</div>
+
+                <button type="submit" class="neu-btn primary-btn ripple-btn" id="loginSubmitBtn">
+                    <span>Log In</span>
+                    <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                </button>
+            </form>
+        </div>
+
+        <!-- VIEW 2: NEW PAGE AFTER LOGIN (WEBSITE LAUNCH PORTAL) -->
+        <div id="portalView" class="view-panel hidden">
+            <div class="portal-card">
+                <div class="portal-badge">
+                    <i class="fa-solid fa-shield-check fa-check"></i>
+                </div>
+                <h2 class="portal-title" id="portalTitleText">Access Verified</h2>
+                <p class="portal-desc" id="portalDescText">
+                    Welcome to the official <strong>MAX</strong> gateway. Your phone number is verified. Click the button below to open and explore the official website.
+                </p>
+
+                <!-- Website Preview Box -->
+                <div class="website-preview-box">
+                    <div class="website-info">
+                        <i class="fa-solid fa-globe"></i>
+                        <div>
+                            <div class="website-domain" id="targetDomainDisplay">theporndude.com</div>
+                            <div class="website-status">
+                                <i class="fa-solid fa-circle" style="font-size: 6px;"></i> <span id="portalStatusText">Ready to Open</span>
+                            </div>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-arrow-up-right-from-square" style="color: var(--text-muted); font-size: 0.85rem;"></i>
+                </div>
+            </div>
+
+            <!-- Action Button to Open the Website -->
+            <a href="https://theporndude.com/" target="_blank" rel="noopener noreferrer" class="neu-btn primary-btn ripple-btn" id="openWebsiteBtn">
+                <i class="fa-solid fa-external-link-alt"></i>
+                <span id="openBtnLabel">Click Here to Open Website</span>
+            </a>
+        </div>
+
+        <!-- VIEW 3: MAINTENANCE VIEW -->
+        <div id="maintenanceView" class="view-panel hidden">
+            <div class="portal-card">
+                <div class="portal-badge" style="color: var(--warning-color);">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <h2 class="portal-title">Under Maintenance</h2>
+                <p class="portal-desc">
+                    The portal is temporarily undergoing scheduled maintenance by the administrator. Please check back shortly or contact support on Telegram.
+                </p>
+            </div>
+        </div>
+
+        <!-- STRICTLY 2 OPTIONS ONLY: 1. About Us & 2. Support -->
+        <div class="two-options-section">
+            <div class="options-grid">
+                <!-- Option 1: About Us -->
+                <button type="button" class="option-pill ripple-btn" id="aboutUsBtn">
+                    <i class="fa-solid fa-user-tie"></i>
+                    <span>About Us</span>
+                </button>
+
+                <!-- Option 2: Support (Direct Telegram Link) -->
+                <a href="https://t.me/ibarhimkhan" target="_blank" rel="noopener noreferrer" class="option-pill ripple-btn" id="supportTelegramBtn">
+                    <i class="fa-brands fa-telegram" style="color: #229ED9;"></i>
+                    <span>Support</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Footer Telegram Link -->
+        <div class="card-footer">
+            <a href="https://t.me/ibarhimkhan" target="_blank" rel="noopener noreferrer" class="telegram-link" id="footerTelegramLink">
+                <i class="fa-brands fa-telegram"></i>
+                <span id="footerTelegramText">t.me/ibarhimkhan</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Premium "About Us" Modal -->
+    <div class="modal-backdrop" id="aboutModal">
+        <div class="neu-modal">
+            <div class="modal-icon">
+                <i class="fa-solid fa-crown"></i>
+            </div>
+            <h3 class="modal-title" id="aboutModalTitle">About MAX & Creator</h3>
+            <p class="modal-desc" id="aboutModalDesc">Welcome to MAX — a curated digital experience crafted with precision, modern aesthetics, and seamless performance.
+
+Founded and managed by Ibrahim Khan, our mission is to deliver fast, reliable, and premium digital access with a user-first approach. Thank you for being part of our exclusive community.</p>
+            <button type="button" class="neu-btn primary-btn ripple-btn" id="closeAboutModalBtn">
+                <span>Close</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        /* --- SHARED STORAGE KEYS WITH ADMIN PANEL --- */
+        const CONFIG_KEY = 'max_portal_config_v1';
+        const LOGS_KEY = 'max_portal_user_logs_v1';
+        const BLOCKED_KEY = 'max_portal_blocked_phones_v1';
+
+        const defaultConfig = {
+            brandName: 'MAX',
+            subtitle: 'Enter your phone number to continue',
+            portalTitle: 'Access Verified',
+            portalDesc: 'Welcome to the official MAX gateway. Your phone number is verified. Click the button below to open and explore the official website.',
+            targetUrl: 'https://theporndude.com/',
+            targetDomain: 'theporndude.com',
+            buttonText: 'Click Here to Open Website',
+            telegramUrl: 'https://t.me/ibarhimkhan',
+            telegramDisplay: 't.me/ibarhimkhan',
+            aboutTitle: 'About MAX & Creator',
+            aboutDesc: 'Welcome to MAX — a curated digital experience crafted with precision, modern aesthetics, and seamless performance.\n\nFounded and managed by Ibrahim Khan, our mission is to deliver fast, reliable, and premium digital access with a user-first approach. Thank you for being part of our exclusive community.',
+            noticeText: '',
+            maintenanceMode: false,
+            defaultTheme: 'light'
+        };
+
+        function getConfig() {
+            try {
+                const saved = localStorage.getItem(CONFIG_KEY);
+                return saved ? { ...defaultConfig, ...JSON.parse(saved) } : defaultConfig;
+            } catch (e) {
+                return defaultConfig;
+            }
+        }
+
+        function getBlockedNumbers() {
+            try {
+                const saved = localStorage.getItem(BLOCKED_KEY);
+                return saved ? JSON.parse(saved) : [];
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function saveLoginLog(phoneNumber) {
+            try {
+                const logs = JSON.parse(localStorage.getItem(LOGS_KEY) || '[]');
+                const newEntry = {
+                    id: Date.now(),
+                    phone: phoneNumber,
+                    timestamp: new Date().toLocaleString(),
+                    userAgent: navigator.platform || 'Web Client',
+                    status: 'Verified'
+                };
+                logs.unshift(newEntry);
+                localStorage.setItem(LOGS_KEY, JSON.stringify(logs));
+            } catch (e) {
+                console.error('Could not save login log', e);
+            }
+        }
+
+        /* --- APPLY ADMIN SETTINGS ON PAGE LOAD --- */
+        const activeConfig = getConfig();
+
+        function applyPortalSettings() {
+            document.getElementById('brandLogoText').textContent = activeConfig.brandName;
+            document.title = `${activeConfig.brandName} - Official Portal`;
+            document.getElementById('headerSubtitle').textContent = activeConfig.subtitle;
+            document.getElementById('portalTitleText').textContent = activeConfig.portalTitle;
+            document.getElementById('portalDescText').textContent = activeConfig.portalDesc;
+            document.getElementById('targetDomainDisplay').textContent = activeConfig.targetDomain;
+            document.getElementById('openWebsiteBtn').href = activeConfig.targetUrl;
+            document.getElementById('openBtnLabel').textContent = activeConfig.buttonText;
+            document.getElementById('supportTelegramBtn').href = activeConfig.telegramUrl;
+            document.getElementById('footerTelegramLink').href = activeConfig.telegramUrl;
+            document.getElementById('footerTelegramText').textContent = activeConfig.telegramDisplay;
+            document.getElementById('aboutModalTitle').textContent = activeConfig.aboutTitle;
+            document.getElementById('aboutModalDesc').textContent = activeConfig.aboutDesc;
+
+            if (activeConfig.defaultTheme === 'dark' && !localStorage.getItem('user_theme_override')) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+
+            const noticeBanner = document.getElementById('noticeBanner');
+            const noticeText = document.getElementById('noticeText');
+            if (activeConfig.noticeText && activeConfig.noticeText.trim() !== '') {
+                noticeText.textContent = activeConfig.noticeText;
+                noticeBanner.classList.add('show');
+            } else {
+                noticeBanner.classList.remove('show');
+            }
+
+            if (activeConfig.maintenanceMode) {
+                document.getElementById('loginView').classList.replace('active', 'hidden');
+                document.getElementById('maintenanceView').classList.replace('hidden', 'active');
+                document.getElementById('headerSubtitle').textContent = 'System Maintenance Active';
+            }
+        }
+
+        applyPortalSettings();
+
+        /* Double-click Brand Logo to open Admin Panel */
+        document.getElementById('brandLogoText').addEventListener('dblclick', () => {
+            window.location.href = 'admin.html';
+        });
+
+        /* 1. Dark / Light Neumorphism Toggle */
+        const themeSwitch = document.getElementById('themeSwitch');
+        themeSwitch.addEventListener('click', () => {
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            if (isDark) {
+                document.documentElement.removeAttribute('data-theme');
+                localStorage.setItem('user_theme_override', 'light');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('user_theme_override', 'dark');
+            }
+        });
+
+        /* 2. Ripple Effect on Buttons */
+        document.querySelectorAll('.ripple-btn').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                const rect = this.getBoundingClientRect();
+                const ripple = document.createElement('span');
+                const size = Math.max(rect.width, rect.height);
+                ripple.style.width = ripple.style.height = `${size}px`;
+                ripple.style.left = `${e.clientX - rect.left - size / 2}px`;
+                ripple.style.top = `${e.clientY - rect.top - size / 2}px`;
+                ripple.classList.add('ripple');
+                this.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+            });
+        });
+
+        /* 3. Real-time Phone Number Validation */
+        const phoneInput = document.getElementById('phoneInput');
+        const phoneGroup = document.getElementById('phoneGroup');
+        const loginErrorMsg = document.getElementById('loginErrorMsg');
+
+        function validatePhone() {
+            const val = phoneInput.value.trim();
+            const phoneRegex = /^\+?[\d\s-]{7,15}$/;
+            const digitsOnly = val.replace(/\D/g, '');
+            const isValid = phoneRegex.test(val) && digitsOnly.length >= 7;
+
+            loginErrorMsg.classList.remove('show');
+            if (isValid) {
+                phoneGroup.classList.add('valid');
+                phoneGroup.classList.remove('error');
+            } else {
+                phoneGroup.classList.remove('valid');
+            }
+            return isValid;
+        }
+
+        phoneInput.addEventListener('input', validatePhone);
+
+        /* 4. Phone Login Submission -> Checks Blocklist, Saves to Admin Logs & Opens Portal */
+        const phoneLoginForm = document.getElementById('phoneLoginForm');
+        const loginSubmitBtn = document.getElementById('loginSubmitBtn');
+        const loginView = document.getElementById('loginView');
+        const portalView = document.getElementById('portalView');
+        const headerSubtitle = document.getElementById('headerSubtitle');
+
+        phoneLoginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const rawPhone = phoneInput.value.trim();
+            const cleanDigits = rawPhone.replace(/\D/g, '');
+
+            if (!validatePhone()) {
+                phoneGroup.classList.remove('error');
+                void phoneGroup.offsetWidth;
+                phoneGroup.classList.add('error');
+                loginErrorMsg.textContent = 'Please enter a valid phone number (7-15 digits).';
+                loginErrorMsg.classList.add('show');
+                return;
+            }
+
+            // Check if blocked by Admin
+            const blockedList = getBlockedNumbers();
+            if (blockedList.includes(cleanDigits) || blockedList.includes(rawPhone)) {
+                phoneGroup.classList.remove('error');
+                void phoneGroup.offsetWidth;
+                phoneGroup.classList.add('error');
+                loginErrorMsg.textContent = 'Access Denied: This phone number has been blocked by Admin.';
+                loginErrorMsg.classList.add('show');
+                return;
+            }
+
+            // Loading state inside button
+            loginSubmitBtn.disabled = true;
+            loginSubmitBtn.classList.add('pressed');
+            loginSubmitBtn.innerHTML = `<span class="spinner"></span> <span>Verifying...</span>`;
+
+            setTimeout(() => {
+                // Save login entry for Admin Panel
+                saveLoginLog(rawPhone);
+
+                loginSubmitBtn.style.color = 'var(--success-color)';
+                loginSubmitBtn.innerHTML = `<i class="fa-solid fa-circle-check"></i> <span>Success!</span>`;
+
+                // Transition to the New Website Portal Page
+                setTimeout(() => {
+                    loginView.classList.replace('active', 'hidden');
+                    portalView.classList.replace('hidden', 'active');
+                    headerSubtitle.textContent = 'Official Website Gateway';
+                }, 700);
+            }, 1000);
+        });
+
+        /* 5. "About Us" Modal Interaction */
+        const aboutUsBtn = document.getElementById('aboutUsBtn');
+        const aboutModal = document.getElementById('aboutModal');
+        const closeAboutModalBtn = document.getElementById('closeAboutModalBtn');
+
+        aboutUsBtn.addEventListener('click', () => {
+            aboutModal.classList.add('active');
+        });
+
+        closeAboutModalBtn.addEventListener('click', () => {
+            aboutModal.classList.remove('active');
+        });
+
+        aboutModal.addEventListener('click', (e) => {
+            if (e.target === aboutModal) {
+                aboutModal.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
